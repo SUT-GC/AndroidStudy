@@ -23,4 +23,5 @@
 * textScaleX 设置文字的间距
 * textSize 设置文字的大小 （单位sp）
 * width / height / maxWidth / minWidth / maxHeight / minHeight
-* 
+
+    `注意，当在布局里使用String，color，dimens，styles等，最好独立成xml进行引用`
