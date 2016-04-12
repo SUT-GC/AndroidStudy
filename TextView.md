@@ -25,3 +25,19 @@
 * width / height / maxWidth / minWidth / maxHeight / minHeight
 
     `注意，当在布局里使用String，color，dimens，styles等，最好独立成xml进行引用`
+
+
+##EditText Study
+###TextText 的属性
+
+> 基本属性跟TextView很多相似相似
+
+* hint 输入框提示信息
+* selectAllOnFocus 获取焦点
+* inputType (date / numberPassword / number / phone / dateTime / ... ) 输入类型
+
+
+##Button Study
+###Button 的属性
+
+* background 制定drawable定制按钮
