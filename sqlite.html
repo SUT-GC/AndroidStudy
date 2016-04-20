@@ -1014,177 +1014,82 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>SharedPreferences</title></head><body><article class="markdown-body"><h2 id="sharedpreferences-file-io"><a name="user-content-sharedpreferences-file-io" href="#sharedpreferences-file-io" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SharedPreferences 与 File IO介绍</h2>
-<h3 id="sharedpreferences"><a name="user-content-sharedpreferences" href="#sharedpreferences" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SharedPreferences</h3>
-<p>保存的数据是Key-value 数据<br />
-SharedPreferences<strong>接口</strong>主要是读取Preferences数据，提供了如下方法来访问数据：  <br />
-<em> boolean contains(String key) <br />
-</em> abstract Map<String, ?> getAll() ：获取全部key-value对<br />
-* getXxx(String key, xxx defValue) ：获取只等key的value，如果key不存在，返回defValue<br />
-    - Xxx: boolean, int, float, long, String</p>
+</style><title>sqlite</title></head><body><article class="markdown-body"><h2 id="sqlite"><a name="user-content-sqlite" href="#sqlite" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SQLite 数据库</h2>
 <blockquote>
-<p>SharedPreferences 没有提供写入数据的能力，通过<code>.edit()</code> 来获取对应的Editor对象，Editor提供了下面方法写入数据：         </p>
-<ul>
-<li>SharedPreferences.Editor clear() :清空SharedPreferences里的数据</li>
-<li>SharedPreferences.Editor putXxx(String key, xxx value)</li>
-<li>SharedPreferences.Editor remove(String key)</li>
-<li>boolean commit(): 当Editor编辑完成后，调用该方法提交修改</li>
-</ul>
+<p>Android提供SQLiteDataBase 代表一个数据库（数据库文件）</p>
 </blockquote>
-<p><strong>SharedPreferences本身是一个接口，无法创建SharedPreferences的实例，只能通过context.getSharedPreferences(String name, int mode)来获取实例</strong><br />
-<em>mode参数值如下：</em>    </p>
+<p><strong>SQLiteDataBase提供如下方法打开一个文件对应的数据库：</strong></p>
 <ul>
-<li>Context.MODE_PRIVATE: 只能被本程序读写</li>
-<li>Context.MODE_WORLD_READABLE: 能被其他程序读</li>
-<li>Context.MODE_WORLD_WRITEABKE: 能被其他程序写      </li>
+<li>static SQLiteDatabase openDatabase(String path, SQLiteDatabase.CursorFactory factory, int flags)</li>
+<li>static SQLiteDatabase openOrCreateDatabase(File file, SQLiteDatabase.CursorFactory factory)</li>
+<li>static SQLiteDatabase openOrCreateDatabase(String path, SQLiteDatabase.CursorFactory factory)</li>
 </ul>
-<p><code>测试代码</code></p>
-<pre><code>public class SharedPreferencesTest extends Activity {
-    SharedPreferences preferences;
-    SharedPreferences.Editor editor;
-    Button bur,buw;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.sharedpreferences_main_activity);
-
-        preferences = getSharedPreferences("gouc", Context.MODE_PRIVATE);
-        editor = preferences.edit();
-        bur = (Button) findViewById(R.id.read);
-        buw = (Button) findViewById(R.id.write);
-
-        bur.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String result = "";
-                String time = preferences.getString("time",null);
-                Integer num = preferences.getInt("num",0);
-                System.out.println("time = "+time+", num = "+num);
-
-                if(time == null || num == 0){
-                    result = "您还未写入数据";
-                }else{
-                    result = "time = "+time+", num = "+num;
-                }
-                Toast.makeText(SharedPreferencesTest.this,result,Toast.LENGTH_LONG).show();
-            }
-        });
-
-        buw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                editor.putString("time",format.format(new Date()));
-                editor.putInt("num", (int) (Math.random() * 100));
-                //提交编辑区的缓冲
-                editor.commit();
-            }
-        });
-    }
-}
-</code></pre>
-<blockquote>
-<p>如果要读取别的程序的SharedPreferences，需要获得其程序的Context<br />
-<code>otherContext = CreatePackageContext("other程序的包, Context.CONTEXT_IGNORE_SECURITY);</code>      </p>
-</blockquote>
-<hr />
-<h3 id="file-io"><a name="user-content-file-io" href="#file-io" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>File IO</h3>
-<p>Context提供了如下两个方法打开程序数据文件的IO流</p>
+<p><strong>获取SQLiteDatabase之后，调用下面方法操作数据库：</strong></p>
 <ul>
-<li>FileInputStream openFileInput(String name);</li>
-<li>FileOutputStream openFileOutput(String name, int mode);<ul>
-<li>MODE_PRIVATE :只能当前程序读写</li>
-<li>MODE_APPEND :以追加的方式打开</li>
-<li>MODE_WORLD_READABLE :其他程序可读</li>
-<li>MODE_WORLD_WRITEABLE :其他程序可写</li>
+<li>void execSQL(String sql , Onject[] bindArgs):执行带占位符的SQL语句</li>
+<li>void ececSQL(String sql) :执行sql语句</li>
+<li>Cursor rawQuery(String sql, String[] selectionArgs) :执行带占位符的SQL查询</li>
+<li>beginTransaction() :开启事物</li>
+<li>endTransaction() :关闭事物</li>
+<li>long insert(String table, String nullColumnHack, ContentValues values) :向指定表中插入数据<ul>
+<li>table：表</li>
+<li>nullColumnHack：强行插入null值的数据列名</li>
+<li>values：要插入的值<ul>
+<li>ContentValues是一个key-values对 values.put(&ldquo;key&rdquo;,&rdquo;value&rdquo;): key代表列名</li>
 </ul>
 </li>
 </ul>
-<p>Context提供如下方法访问数据文件:    </p>
-<ul>
-<li>getDir(String name, int mode) :在、获取或创建name对应的子目录</li>
-<li>File getFilesDir() :获取该程序数据文件的绝对路径</li>
-<li>String[] fileList() :返回该程序数据文件夹下的全部文件</li>
-<li>deleteFile(String) :删除该程序数据文件夹下的制定文件       </li>
+</li>
+<li>int update(String table, ContentValues values, String whereClause, String[] whereArgs)<ul>
+<li>table 表</li>
+<li>values 代表更新的数据</li>
+<li>whereClause 满足这个参数的语句将会被更新</li>
+<li>whereArgs 用户向whereClause的占位符中传参数</li>
+<li><code>int result = db.update("table",values,"_id&gt;?",new Integer[]{2})</code></li>
 </ul>
-<p><code>测试代码</code></p>
-<pre><code>package android.com.myapplication;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-
-/**
- - Created by gouchao on 16-4-20.
- */
-public class FileTest extends Activity {
-    Button write,read;
-    EditText input;
-    TextView show;
-    FileInputStream inputStreams;
-    FileOutputStream outputStreams;
-    String FILE_NAME = "igouc";
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.filetest_main_activity);
-
-        input = (EditText) findViewById(R.id.file_edittext);
-        show = (TextView) findViewById(R.id.file_textview_1);
-        write = (Button) findViewById(R.id.file_button_input);
-        read = (Button) findViewById(R.id.file_button_read);
-
-
-        write.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    outputStreams = openFileOutput(FILE_NAME,MODE_APPEND);
-                    PrintStream ps = new PrintStream(outputStreams);
-                    String stringValue = input.getText().toString();
-                    ps.println(stringValue);
-
-                    ps.flush();
-                    outputStreams.close();
-                    ps.close();
-                    input.setText("");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        read.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    inputStreams = openFileInput(FILE_NAME);
-                    byte[] bytes = new byte[2014];
-                    StringBuffer sb = new StringBuffer();
-                    int count = 0;
-                    while((count = inputStreams.read(bytes)) &gt; 0){
-                        sb.append(new String(bytes,0,count));
-                    }
-                    show.setText(sb);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-}
-</code></pre></article></body></html>
+</li>
+<li>int delete(String table, String whereClause, String whereArgs) :删除符合whereCause的记录</li>
+<li>Cursor query(boolean distinct, String table, String[] columns, String whereClause, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)<ul>
+<li>distinct 是否去掉重复的记录</li>
+<li>table 表</li>
+<li>columns 要查询出的列名</li>
+<li>whereClause where条件</li>
+<li>selectionArgs whereClause的占位符</li>
+<li>groupBy 控制分组的语句（group by 后面的句子）</li>
+<li>having 用户分组过滤的部分</li>
+<li>orderBy 排序后面的部分</li>
+<li>limit limit后面的部分</li>
+<li><code>Cursor cursor = db.query("table", new String[]{"_id", "name"}, "name like ?", "new String[]{"_gc%"}, bull, null, "_id desc","5,10")</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>获得Cursor之后进行数据读取操作</strong>  <br />
+        sqLiteOpenHelper = new My</p>
+<ul>
+<li>boolean move(int offset) :讲指针向上或者向下移动行数<ul>
+<li>offset &gt; 0 向下移动</li>
+<li>offset &lt; 0 向上移动</li>
+</ul>
+</li>
+<li>boolean moveToFirst()</li>
+<li>boolean moveToLast()</li>
+<li>boolean moveToNext()</li>
+<li>boolean moveToPrevious()</li>
+<li>boolean moveToPosition(int position) :将指针移动到指定行，如果移动成功，返回true，否则返回false</li>
+<li>getXxx(int colume) 读取该行指定列的数据    </li>
+</ul>
+<p>Cursor 封装成 SimpleCursorAdapter，这个adapter将会作为ListView的种子种入<br />
+<code>SimpleAdapter adapter = new SimpleCursorAdapter(Context, Resource, cursor, new String[]{列}, new int[]{R.id.xxx},CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)</code></p>
+<blockquote>
+<p>如果要将Cursor包装成SimpleAdapter，必须以<code>_id</code>作为主键</p>
+</blockquote>
+<p><strong>SQLiteOpenHelper 类</strong>     </p>
+<p>实际项目中很少使用SQLiteDatabase  <br />
+通常是集成SQLiteOpenHelper开发子类，并且通过子类的getReadableDatabase方法与getWritableDatabase方法打开数据库  <br />
+创建SQLiteOpenHelper的子类，通常重写 onCreate(SQLiteDatabase db) 与 onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)方法  <br />
+可以使用的方法如下:    </p>
+<ul>
+<li>sychronized SQLiteDatabase getReadableDatabase() :以读写的方式打开数据库对应的SQLiteDatabase</li>
+<li>sychronized SQLiteDatabase getWriteableDatabase() :以写的方式打开</li>
+<li>sychronized void close()    </li>
+</ul></article></body></html>

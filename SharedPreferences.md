@@ -175,6 +175,16 @@ Context提供如下方法访问数据文件:
         }
     }
 
+**在SD卡中进行File IO**
+* 判断是否插入SD卡并且判断是否具有读写权限：`Environment.getExternalStrageState().equals(Environment.MEDIA_MOUNTED)`
+* `File Environment.getExternalStrageDirectory()` :获取外部存储器卡的目录 //external 外部的，strage 存储器
+* 使用IO进行读写
+> 要求在Manifest文件中加上权限
+> //在内存卡中创建和删除文件的权限
+> `<user-permission android:name="android.permisson.MOUNT_UNMOUNT_FILESYSYTEMS"`
+> //向SD卡中写入数据的权限
+> `<user-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"`
 
+**如果不想用Environment获取file ,可以直接访问/mnt/sdcarf/ (这个是sd卡的目录)**
 
 
