@@ -1014,178 +1014,177 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>ViewPager</title></head><body><article class="markdown-body"><h2 id="viewpager"><a name="user-content-viewpager" href="#viewpager" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ViewPager</h2>
-<h3 id="viewpager_1"><a name="user-content-viewpager_1" href="#viewpager_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ViewPager加载页卡</h3>
-<ul>
-<li>
-<p>讲Layout布局转换为View对象</p>
-<pre><code>//第一种方法
-LayoutInflater inflater = getLayoutInflater().from(this);
-View inflater.inflate(resource,root);
-//第二种方法
-View View.inflate(context,resource,root);
-</code></pre>
-</li>
-<li>
-<p>配置Adapter</p>
-<ul>
-<li>PagerAdapter 数据源List<View></li>
-<li>FragmentPagerAdapter 数据源List<Fragment></li>
-<li>FragmentStatePagerAdapter 数据源List<Fragment></li>
-</ul>
-</li>
-</ul>
+</style><title>SharedPreferences</title></head><body><article class="markdown-body"><h2 id="sharedpreferences-file-io"><a name="user-content-sharedpreferences-file-io" href="#sharedpreferences-file-io" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SharedPreferences 与 File IO介绍</h2>
+<h3 id="sharedpreferences"><a name="user-content-sharedpreferences" href="#sharedpreferences" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SharedPreferences</h3>
+<p>保存的数据是Key-value 数据<br />
+SharedPreferences<strong>接口</strong>主要是读取Preferences数据，提供了如下方法来访问数据：  <br />
+<em> boolean contains(String key) <br />
+</em> abstract Map<String, ?> getAll() ：获取全部key-value对<br />
+* getXxx(String key, xxx defValue) ：获取只等key的value，如果key不存在，返回defValue<br />
+    - Xxx: boolean, int, float, long, String</p>
 <blockquote>
-<p><strong>注意，ViewPager必须用android.support.v4.view.ViewPager中的ViewPager</strong>     </p>
+<p>SharedPreferences 没有提供写入数据的能力，通过<code>.edit()</code> 来获取对应的Editor对象，Editor提供了下面方法写入数据：         </p>
+<ul>
+<li>SharedPreferences.Editor clear() :清空SharedPreferences里的数据</li>
+<li>SharedPreferences.Editor putXxx(String key, xxx value)</li>
+<li>SharedPreferences.Editor remove(String key)</li>
+<li>boolean commit(): 当Editor编辑完成后，调用该方法提交修改</li>
+</ul>
 </blockquote>
-<p><code>MyPagerAdaptor适配器的代码</code>    </p>
-<pre><code> package android.com.myapplication;
-
-import android.support.v4.view.PagerAdapter;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.List;
-
-/**
- - Created by gouchao on 16-4-19.
- */
-public class MyPagerAdaptor extends PagerAdapter {
-    private List&lt;String&gt; titleList;
-    private List&lt;View&gt; viewList;
-    public MyPagerAdaptor(List&lt;View&gt; viewList, List&lt;String&gt; titleList){
-        this.viewList = viewList;
-        this.titleList = titleList;
-    }
-
-    //返回页卡的数量
-    @Override
-    public int getCount() {
-        return viewList.size();
-    }
-
-    //判断当前View是否来自于对象
-    @Override
-    public boolean isViewFromObject(View view, Object object) {
-        //官方的写法
-        return view==object;
-    }
-
-    /**
-     - 为了ViewPager自动管理View页卡
-     - ViewPager是默认三个三个的加载
-     - 显示效果
-     - 1,2,3 ==&gt; 2,3,4
-     */
-    //实例化一个页卡
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        //添加当前View view
-        container.addView(viewList.get(position));
-        return viewList.get(position);
-    }
-
-    //销毁一个页卡
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView(viewList.get(position));
-    }
-
-
-    //设置ViewPager的标题
-    //如果要复写这个方法，必须要在布局文件中加入PagerTabStrip
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return titleList.get(position);
-    }
-}
-</code></pre>
-<p><code>ViewPagerMainActivity代码</code>    </p>
-<pre><code> package android.com.myapplication;
-
-import android.app.Activity;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- - Created by gouchao on 16-4-19.
- */
-public class ViewPagerMainActivity extends Activity {
-    private List&lt;View&gt; viewList;
-    private List&lt;String&gt; titleList;
+<p><strong>SharedPreferences本身是一个接口，无法创建SharedPreferences的实例，只能通过context.getSharedPreferences(String name, int mode)来获取实例</strong><br />
+<em>mode参数值如下：</em>    </p>
+<ul>
+<li>Context.MODE_PRIVATE: 只能被本程序读写</li>
+<li>Context.MODE_WORLD_READABLE: 能被其他程序读</li>
+<li>Context.MODE_WORLD_WRITEABKE: 能被其他程序写      </li>
+</ul>
+<p><code>测试代码</code></p>
+<pre><code>public class SharedPreferencesTest extends Activity {
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+    Button bur,buw;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.viewpager_main_activity);
-        viewList = new ArrayList&lt;&gt;();
-        View view1 = View.inflate(this,R.layout.viewpagerview1,null);
-        View view2 = View.inflate(this,R.layout.viewpagerview2,null);
-        View view3 = View.inflate(this,R.layout.viewpagerview3,null);
-        viewList.add(view1);
-        viewList.add(view2);
-        viewList.add(view3);
+        setContentView(R.layout.sharedpreferences_main_activity);
 
-        titleList = new ArrayList&lt;&gt;();
-        titleList.add("第一页");
-        titleList.add("第二页");
-        titleList.add("第三页");
+        preferences = getSharedPreferences("gouc", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        bur = (Button) findViewById(R.id.read);
+        buw = (Button) findViewById(R.id.write);
 
+        bur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String result = "";
+                String time = preferences.getString("time",null);
+                Integer num = preferences.getInt("num",0);
+                System.out.println("time = "+time+", num = "+num);
 
-        //获取pagerTabStrip
-        PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.tab);
+                if(time == null || num == 0){
+                    result = "您还未写入数据";
+                }else{
+                    result = "time = "+time+", num = "+num;
+                }
+                Toast.makeText(SharedPreferencesTest.this,result,Toast.LENGTH_LONG).show();
+            }
+        });
 
-        //或PagerTabStrip设置属性
-        pagerTabStrip.setTextColor(Color.RED);
-        pagerTabStrip.setDrawFullUnderline(false);
-        pagerTabStrip.setTabIndicatorColor(Color.GREEN);
-        pagerTabStrip.setBackgroundColor(Color.YELLOW);
-//        pagerTabStrip.set
-
-        //创建适配器
-        MyPagerAdaptor adaptor = new MyPagerAdaptor(viewList,titleList);
-
-        //创建ViewPager
-        ViewPager viewPager = (ViewPager) findViewById(R.id.mainpager);
-
-        //加载适配器
-        viewPager.setAdapter(adaptor);
+        buw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                editor.putString("time",format.format(new Date()));
+                editor.putInt("num", (int) (Math.random() * 100));
+                //提交编辑区的缓冲
+                editor.commit();
+            }
+        });
     }
 }
 </code></pre>
-<p><code>main_XML配置</code>      </p>
-<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"&gt;
+<blockquote>
+<p>如果要读取别的程序的SharedPreferences，需要获得其程序的Context<br />
+<code>otherContext = CreatePackageContext("other程序的包, Context.CONTEXT_IGNORE_SECURITY);</code>      </p>
+</blockquote>
+<hr />
+<h3 id="file-io"><a name="user-content-file-io" href="#file-io" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>File IO</h3>
+<p>Context提供了如下两个方法打开程序数据文件的IO流</p>
+<ul>
+<li>FileInputStream openFileInput(String name);</li>
+<li>FileOutputStream openFileOutput(String name, int mode);<ul>
+<li>MODE_PRIVATE :只能当前程序读写</li>
+<li>MODE_APPEND :以追加的方式打开</li>
+<li>MODE_WORLD_READABLE :其他程序可读</li>
+<li>MODE_WORLD_WRITEABLE :其他程序可写</li>
+</ul>
+</li>
+</ul>
+<p>Context提供如下方法访问数据文件:    </p>
+<ul>
+<li>getDir(String name, int mode) :在、获取或创建name对应的子目录</li>
+<li>File getFilesDir() :获取该程序数据文件的绝对路径</li>
+<li>String[] fileList() :返回该程序数据文件夹下的全部文件</li>
+<li>deleteFile(String) :删除该程序数据文件夹下的制定文件       </li>
+</ul>
+<p><code>测试代码</code></p>
+<pre><code>package android.com.myapplication;
 
-    &lt;android.support.v4.view.ViewPager
-        android:id="@+id/mainpager"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"&gt;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-        &lt;android.support.v4.view.PagerTabStrip
-            android:id="@+id/tab"
-            android:layout_gravity="top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"&gt;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
-        &lt;/android.support.v4.view.PagerTabStrip&gt;
-        &lt;!--&lt;android.support.v4.view.PagerTitleStrip--&gt;
-            &lt;!--android:id="@+id/title"--&gt;
-            &lt;!--android:layout_gravity="bottom"--&gt;
-            &lt;!--android:layout_width="wrap_content"--&gt;
-            &lt;!--android:layout_height="wrap_content"&gt;--&gt;
+/**
+ - Created by gouchao on 16-4-20.
+ */
+public class FileTest extends Activity {
+    Button write,read;
+    EditText input;
+    TextView show;
+    FileInputStream inputStreams;
+    FileOutputStream outputStreams;
+    String FILE_NAME = "igouc";
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.filetest_main_activity);
 
-        &lt;!--&lt;/android.support.v4.view.PagerTitleStrip&gt;--&gt;
-    &lt;/android.support.v4.view.ViewPager&gt;
-&lt;/LinearLayout&gt;
-</code></pre>
-<p><code>图片效果如下</code><br />
-<img alt="效果" src="http://7xp423.com1.z0.glb.clouddn.com/ViewPager.png" /></p></article></body></html>
+        input = (EditText) findViewById(R.id.file_edittext);
+        show = (TextView) findViewById(R.id.file_textview_1);
+        write = (Button) findViewById(R.id.file_button_input);
+        read = (Button) findViewById(R.id.file_button_read);
+
+
+        write.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    outputStreams = openFileOutput(FILE_NAME,MODE_APPEND);
+                    PrintStream ps = new PrintStream(outputStreams);
+                    String stringValue = input.getText().toString();
+                    ps.println(stringValue);
+
+                    ps.flush();
+                    outputStreams.close();
+                    ps.close();
+                    input.setText("");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        read.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    inputStreams = openFileInput(FILE_NAME);
+                    byte[] bytes = new byte[2014];
+                    StringBuffer sb = new StringBuffer();
+                    int count = 0;
+                    while((count = inputStreams.read(bytes)) &gt; 0){
+                        sb.append(new String(bytes,0,count));
+                    }
+                    show.setText(sb);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+}
+</code></pre></article></body></html>
