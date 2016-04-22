@@ -1014,82 +1014,52 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>sqlite</title></head><body><article class="markdown-body"><h2 id="sqlite"><a name="user-content-sqlite" href="#sqlite" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SQLite 数据库</h2>
+</style><title>Menu</title></head><body><article class="markdown-body"><h2 id="android"><a name="user-content-android" href="#android" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Android 菜单</h2>
+<p>Menu接口是一个父接口，该接口下有两个子接口 :    </p>
+<ul>
+<li>SubMenu :代表一个子菜单，可以包含1～N个MenuItem</li>
+<li>ContextMenu : 代表一个上下文菜单，可以包含1～N个MenuItem</li>
+</ul>
+<p>Android 的不同菜单具有的特征 :    </p>
+<ul>
+<li>选项菜单：不支持勾选标记，不支持嵌套子菜单</li>
+<li>子菜单（SubMenu）：不支持菜单项的图标，不支持嵌套子菜单</li>
+<li>上下文菜单（ContextMenu）：不支持菜单快捷键和图标</li>
+</ul>
+<p>Menu接口定义了如下的方法：    </p>
+<ul>
+<li>MenuItem add(int titleRes) :添加一个新的菜单项</li>
+<li>MenuItem add(CharSequence title) : 添加一个新的菜单项</li>
+<li>MenuItem add(int groupid, int itemid, int order, int titleRes) :添加一个新的处于groupId组的菜单项</li>
+<li>MenuItem add(int groupid, int itemid, int order, CharSequence title) :添加一个新的groupId</li>
+<li>SubMenu addSubMenu(int titleRes) : 添加一个新的子菜单</li>
+<li>SubMenu addSubMenu(CharSequence title) : 添加一个新的子菜单</li>
+<li>SubMenu addSubMenu(int groupid, int itemid, int order, int titleRes) :添加一个新的处于groupId组的子菜单</li>
+<li>SubMenu addSubMenu(int groupid, int itemid, int order, CharSequence title) :添加一个新的groupId</li>
+</ul>
 <blockquote>
-<p>Android提供SQLiteDataBase 代表一个数据库（数据库文件）</p>
+<p>上面的方法总结起来就是：add方法添加菜单项，addSubMenu方法添加子菜单。<br />
+这些重载的方法区别是：是否将子菜单，菜单项添加到指定菜单组中，是否使用资源文件中的字符串资源来设置</p>
 </blockquote>
-<p><strong>SQLiteDataBase提供如下方法打开一个文件对应的数据库：</strong></p>
+<p>SubMenu 继承了Menu，额外提供了如下方法:    </p>
 <ul>
-<li>static SQLiteDatabase openDatabase(String path, SQLiteDatabase.CursorFactory factory, int flags)</li>
-<li>static SQLiteDatabase openOrCreateDatabase(File file, SQLiteDatabase.CursorFactory factory)</li>
-<li>static SQLiteDatabase openOrCreateDatabase(String path, SQLiteDatabase.CursorFactory factory)</li>
+<li>SubMenu setHeaderIcon(Drawable icon) :设置菜单头的图标</li>
+<li>SubMenu setHeaderIcon(int iconRes) :设置菜单头的图标</li>
+<li>SubMenu setHeaderTitle(int titleRes) :设置菜单头标题</li>
+<li>SubMenu setHeaderTitle(CharSequence title) :设置菜单头标题</li>
+<li>SubMenu setHeaderView(View view) :使用View设置菜单头    </li>
 </ul>
-<p><strong>获取SQLiteDatabase之后，调用下面方法操作数据库：</strong></p>
+<p>重写Activity的onCreateOptionsMenu(Menu menu)方法，在方法里添加菜单项或者子菜单就可以了  <br />
+如果希望程序相应单击事件，重写Activity的onOpyionsItemSelected(MenuItem mi)方法即可    </p>
+<p>ContextMenu额外提供的方法:    </p>
 <ul>
-<li>void execSQL(String sql , Onject[] bindArgs):执行带占位符的SQL语句</li>
-<li>void ececSQL(String sql) :执行sql语句</li>
-<li>Cursor rawQuery(String sql, String[] selectionArgs) :执行带占位符的SQL查询</li>
-<li>beginTransaction() :开启事物</li>
-<li>endTransaction() :关闭事物</li>
-<li>long insert(String table, String nullColumnHack, ContentValues values) :向指定表中插入数据<ul>
-<li>table：表</li>
-<li>nullColumnHack：强行插入null值的数据列名</li>
-<li>values：要插入的值<ul>
-<li>ContentValues是一个key-values对 values.put(&ldquo;key&rdquo;,&rdquo;value&rdquo;): key代表列名</li>
+<li>ContextMenu setHeaderIcon(Drawable icon) : 为上下文菜单设置图标</li>
+<li>ContextMenu setHeaderIcon(int iconRes) : 为上下文菜单设置图标</li>
+<li>ContextMenu setHeaderTitle(int titleRes) : 为上下文菜单设置标题</li>
 </ul>
-</li>
-</ul>
-</li>
-<li>int update(String table, ContentValues values, String whereClause, String[] whereArgs)<ul>
-<li>table 表</li>
-<li>values 代表更新的数据</li>
-<li>whereClause 满足这个参数的语句将会被更新</li>
-<li>whereArgs 用户向whereClause的占位符中传参数</li>
-<li><code>int result = db.update("table",values,"_id&gt;?",new Integer[]{2})</code></li>
-</ul>
-</li>
-<li>int delete(String table, String whereClause, String whereArgs) :删除符合whereCause的记录</li>
-<li>Cursor query(boolean distinct, String table, String[] columns, String whereClause, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)<ul>
-<li>distinct 是否去掉重复的记录</li>
-<li>table 表</li>
-<li>columns 要查询出的列名</li>
-<li>whereClause where条件</li>
-<li>selectionArgs whereClause的占位符</li>
-<li>groupBy 控制分组的语句（group by 后面的句子）</li>
-<li>having 用户分组过滤的部分</li>
-<li>orderBy 排序后面的部分</li>
-<li>limit limit后面的部分</li>
-<li><code>Cursor cursor = db.query("table", new String[]{"_id", "name"}, "name like ?", "new String[]{"_gc%"}, bull, null, "_id desc","5,10")</code></li>
-</ul>
-</li>
-</ul>
-<p><strong>获得Cursor之后进行数据读取操作</strong>  <br />
-        sqLiteOpenHelper = new My</p>
+<p>开发上下文菜单的步骤:    </p>
 <ul>
-<li>boolean move(int offset) :讲指针向上或者向下移动行数<ul>
-<li>offset &gt; 0 向下移动</li>
-<li>offset &lt; 0 向上移动</li>
-</ul>
-</li>
-<li>boolean moveToFirst()</li>
-<li>boolean moveToLast()</li>
-<li>boolean moveToNext()</li>
-<li>boolean moveToPrevious()</li>
-<li>boolean moveToPosition(int position) :将指针移动到指定行，如果移动成功，返回true，否则返回false</li>
-<li>getXxx(int colume) 读取该行指定列的数据    </li>
-</ul>
-<p>Cursor 封装成 SimpleCursorAdapter，这个adapter将会作为ListView的种子种入<br />
-<code>SimpleAdapter adapter = new SimpleCursorAdapter(Context, Resource, cursor, new String[]{列}, new int[]{R.id.xxx},CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)</code></p>
-<blockquote>
-<p>如果要将Cursor包装成SimpleAdapter，必须以<code>_id</code>作为主键</p>
-</blockquote>
-<p><strong>SQLiteOpenHelper 类</strong>     </p>
-<p>实际项目中很少使用SQLiteDatabase  <br />
-通常是集成SQLiteOpenHelper开发子类，并且通过子类的getReadableDatabase方法与getWritableDatabase方法打开数据库  <br />
-创建SQLiteOpenHelper的子类，通常重写 onCreate(SQLiteDatabase db) 与 onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)方法  <br />
-可以使用的方法如下:    </p>
-<ul>
-<li>sychronized SQLiteDatabase getReadableDatabase() :以读写的方式打开数据库对应的SQLiteDatabase</li>
-<li>sychronized SQLiteDatabase getWriteableDatabase() :以写的方式打开</li>
-<li>sychronized void close()    </li>
+<li>重写Activity的onCreateContextMenu(ContextMenu menu, View source, ContextMenu Context, MenuInfo menuinfo)</li>
+<li>调用Activity的registerForContextMenu(View view)</li>
+<li>响应时间要重写onContextItemSelected(MenuItem mi)方法</li>
 </ul></article></body></html>
