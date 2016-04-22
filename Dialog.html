@@ -1014,83 +1014,81 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>Menu</title></head><body><article class="markdown-body"><h2 id="android"><a name="user-content-android" href="#android" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Android 菜单</h2>
-<p>Menu接口是一个父接口，该接口下有两个子接口 :    </p>
+</style><title>Dialog</title></head><body><article class="markdown-body"><h2 id="dialog"><a name="user-content-dialog" href="#dialog" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Dialog介绍</h2>
 <ul>
-<li>SubMenu :代表一个子菜单，可以包含1～N个MenuItem</li>
-<li>ContextMenu : 代表一个上下文菜单，可以包含1～N个MenuItem</li>
+<li>AlertDialog    <ul>
+<li>使用AlertDialog.builder中的create方法返回AlertDialog。</li>
+<li>alertDialog.show()进行显示</li>
+<li>AlertDialog.builder对Dialog进行包装的方法<ul>
+<li>setTitle :为对话框设置标题</li>
+<li>setIcon :为对话框设置图标</li>
+<li>setMessage :为对话框设置内容</li>
+<li>setView :为对话框自定义样式</li>
+<li>setItems :设置要显示的一个list</li>
+<li>setMultiChoiceItems :用来设置对话框显示复选框</li>
+<li>setSingleChoiceItems :设置单选按钮</li>
+<li>setNeutralButton :设置普通按钮</li>
+<li>setPositiveButton :给对话框添加确认按钮</li>
+<li>setNegativeButton :对话框添加取消按钮</li>
 </ul>
-<p>Android 的不同菜单具有的特征 :    </p>
-<ul>
-<li>选项菜单：不支持勾选标记，不支持嵌套子菜单</li>
-<li>子菜单（SubMenu）：不支持菜单项的图标，不支持嵌套子菜单</li>
-<li>上下文菜单（ContextMenu）：不支持菜单快捷键和图标</li>
+</li>
+<li>cancel() :取消dialog显示</li>
 </ul>
-<p>Menu接口定义了如下的方法：    </p>
-<ul>
-<li>MenuItem add(int titleRes) :添加一个新的菜单项</li>
-<li>MenuItem add(CharSequence title) : 添加一个新的菜单项</li>
-<li>MenuItem add(int groupid, int itemid, int order, int titleRes) :添加一个新的处于groupId组的菜单项</li>
-<li>MenuItem add(int groupid, int itemid, int order, CharSequence title) :添加一个新的groupId</li>
-<li>SubMenu addSubMenu(int titleRes) : 添加一个新的子菜单</li>
-<li>SubMenu addSubMenu(CharSequence title) : 添加一个新的子菜单</li>
-<li>SubMenu addSubMenu(int groupid, int itemid, int order, int titleRes) :添加一个新的处于groupId组的子菜单</li>
-<li>SubMenu addSubMenu(int groupid, int itemid, int order, CharSequence title) :添加一个新的groupId</li>
+</li>
 </ul>
 <blockquote>
-<p>上面的方法总结起来就是：add方法添加菜单项，addSubMenu方法添加子菜单。<br />
-这些重载的方法区别是：是否将子菜单，菜单项添加到指定菜单组中，是否使用资源文件中的字符串资源来设置</p>
+<p>当设置setSingleChoiceItems的时候，请不要设置setMessage，不然会有一个会被隐藏</p>
 </blockquote>
-<p>SubMenu 继承了Menu，额外提供了如下方法:    </p>
-<ul>
-<li>SubMenu setHeaderIcon(Drawable icon) :设置菜单头的图标</li>
-<li>SubMenu setHeaderIcon(int iconRes) :设置菜单头的图标</li>
-<li>SubMenu setHeaderTitle(int titleRes) :设置菜单头标题</li>
-<li>SubMenu setHeaderTitle(CharSequence title) :设置菜单头标题</li>
-<li>SubMenu setHeaderView(View view) :使用View设置菜单头    </li>
-</ul>
-<p>重写Activity的onCreateOptionsMenu(Menu menu)方法，在方法里添加菜单项或者子菜单就可以了  <br />
-如果希望程序相应单击事件，重写Activity的onOpyionsItemSelected(MenuItem mi)方法即可    </p>
-<p>ContextMenu额外提供的方法:    </p>
-<ul>
-<li>ContextMenu setHeaderIcon(Drawable icon) : 为上下文菜单设置图标</li>
-<li>ContextMenu setHeaderIcon(int iconRes) : 为上下文菜单设置图标</li>
-<li>ContextMenu setHeaderTitle(int titleRes) : 为上下文菜单设置标题</li>
-</ul>
-<p>开发上下文菜单的步骤:    </p>
-<ul>
-<li>重写Activity的onCreateContextMenu(ContextMenu menu, View source, ContextMenu Context, MenuInfo menuinfo)</li>
-<li>调用Activity的registerForContextMenu(View view)</li>
-<li>响应时间要重写onContextItemSelected(MenuItem mi)方法</li>
-</ul>
-<p>创建选项菜单：    </p>
-<ul>
-<li>设置菜单项</li>
-<li>通过XML进行配置</li>
-<li>设置菜单项点击监听: onOptionsItemSelected()</li>
-</ul>
-<p><code>代码展示</code>    </p>
-<pre><code>@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
-        return super.onCreateOptionsMenu(menu);
+<p><code>=========测试代码==========</code>    </p>
+<pre><code>public class NullTestMainActivity extends Activity {
+    Button b1,b2,b3;
+    String[] persons  = new String[]{"男生","女生","女博士","程序员"};
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.null_main_activity);
+        b1 = (Button) findViewById(R.id.null_bu1);
+        b2 = (Button) findViewById(R.id.null_bu2);
+        b3 = (Button) findViewById(R.id.null_bu3);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(NullTestMainActivity.this);
+                //设置单选按钮
+//              builder.setSingleChoiceItems(persons, 0, new DialogInterface.OnClickListener() {
+//                  @Override
+//                  public void onClick(DialogInterface dialog, int which) {
+//                      Toast.makeText(NullTestMainActivity.this,"点击的是第"+which+"个",Toast.LENGTH_SHORT).show();
+//                  }
+//              });
+                //设置多选按钮
+                builder.setMultiChoiceItems(persons, null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        Toast.makeText(NullTestMainActivity.this,"点击的是第"+which+"个被选中"+isChecked,Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setTitle("对话框的标题");
+//              builder.setMessage("对话框的消息");
+                builder.setIcon(R.drawable.bizhi1);
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        b2.setVisibility(View.GONE);
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        b2.setVisibility(View.VISIBLE);
+                    }
+                });
+                builder.setNeutralButton("普通",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
-
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"&gt;
-    &lt;item android:id="@+id/putong1" android:title="普通菜单1"&gt;&lt;/item&gt;
-    &lt;item android:id="@+id/putong2" android:title="普通菜单2"/&gt;
-
-&lt;/menu&gt;
-</code></pre>
-<p>这样就添加进菜单了 。。。。   </p>
-<p>在Activity中添加菜单点击时间:    </p>
-<ul>
-<li>直接重写boolean onOptionsItemSelected(MenuItem item)方法<pre><code>@Override
-public boolean onOptionsItemSelected(MenuItem item) {
-    Toast.makeText(this,item.getTitle()+"被点击了",Toast.LENGTH_SHORT).show();
-    return super.onOptionsItemSelected(item);
 }
-</code></pre>
-</li>
-</ul></article></body></html>
+</code></pre></article></body></html>
