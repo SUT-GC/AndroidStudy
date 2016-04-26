@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="事物信息分类：">
+    </item>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all"
+            android:title="全部"/>
+        <item
+            android:id="@+id/nav_life"
+            android:title="生活"/>
+        <item
+            android:id="@+id/nav_study"
+            android:title="学习"/>
+        <item
+            android:id="@+id/nav_work"
+            android:title="工作"/>
+
+    </group>
+    <!--</menu>-->
+
+    <!--<item android:title="Communicate">-->
+        <!--&lt;!&ndash;<menu>&ndash;&gt;-->
+            <!--&lt;!&ndash;<item&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/nav_share"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:icon="@android:drawable/ic_menu_share"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:title="Share"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;<item&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/nav_send"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:icon="@android:drawable/ic_menu_send"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:title="Send"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;</menu>&ndash;&gt;-->
+    <!--</item>-->
+
+</menu>
