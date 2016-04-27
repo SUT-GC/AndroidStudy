@@ -12,6 +12,7 @@
         android:layout_gravity="left"
         >
         <LinearLayout
+            android:id="@+id/button_setitemtotop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/green"
@@ -29,6 +30,7 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/button_deleteitem"
             android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,16 +57,50 @@
         android:orientation="vertical"
         android:background="@color/pageColor"
         >
-        <TextView
-            android:textSize="20sp"
-            android:gravity="left"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/show_eachnoe_info"
-            android:text="这里是文档"
-            android:singleLine="true"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:textSize="20sp"
+                android:gravity="left"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/show_eachnoe_info"
+                android:text="这里是文档"
+                android:singleLine="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                />
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/show_item_powershow"
+                android:layout_toLeftOf="@+id/show_eachnoe_info"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/top"
+                android:textColor="@color/red"
+                android:textSize="10sp"
+                android:gravity="right"
+                android:layout_gravity="right"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/show_eachitem_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/show_eachitem_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/show_each_item_content"

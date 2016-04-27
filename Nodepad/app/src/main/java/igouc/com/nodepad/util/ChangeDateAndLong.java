@@ -16,4 +16,8 @@ public class ChangeDateAndLong {
 		Date date = new Date(l);
 		return dateFormat.format(date);
 	}
+	public static String formatDateFromDate(Date date){
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return dateFormat.format(date);
+	}
 }
