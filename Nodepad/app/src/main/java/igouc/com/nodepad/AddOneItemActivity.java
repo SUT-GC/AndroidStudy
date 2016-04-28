@@ -1,7 +1,10 @@
 package igouc.com.nodepad;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +29,9 @@ import igouc.com.nodepad.util.ItemUtil;
  */
 public class AddOneItemActivity extends Activity implements View.OnClickListener {
 
+	enum Screen{
+		HORIZONTAL,VERTICAL
+	}
 	private static int KEY_ALL_LEGAL = 0;
 	private static int KEY_TITLE_NOTLEGAL = 1;
 	private static int KEY_CONTENT_NOTLEGAL = 2;
@@ -39,19 +45,100 @@ public class AddOneItemActivity extends Activity implements View.OnClickListener
 	private Spinner inputLabel;
 	private Button save, cancel;
 	private Date nowTime;
-
+	private int ID = -1;
 	private int selectLabelId;
+	//创建状态码，0为add，1为edit
+	private int ADD_OR_EDIT = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.additem);
 		initWidget();
-		initEditText();
-		addSpinnerLisener();
-		save.setOnClickListener(this);
+		//判断横竖屏，进行EditView的宽度控制
+		//判断横屏
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			initEditText(Screen.VERTICAL);
+		}else{
+			initEditText(Screen.HORIZONTAL);
+		}
+
+		/*
+		*判断bundel中是否存入item
+		*如果有item的数据，则向界面中添加数据：即为修改Item界面
+		*如果没有Item的数据，则为添加Item界面
+		*/
+		if(getIntent()!=null && getIntent().getExtras() != null && getIntent().getExtras().getString("itemId")!=null ) {
+			//读出Id
+			ID = Integer.parseInt(getIntent().getExtras().getString("itemId"));
+			//填充数据，隐藏save按钮
+			fillValue(ID);
+			//改变状态码的值
+			ADD_OR_EDIT = 1;
+			//当inputTitle与inputContent内容改变时，save按钮显示
+			setSaveButtonShow();
+			//当label改变时候，save按钮显示
+			addSpinnerLisener();
+			save.setOnClickListener(this);
+
+		}else{
+			//改变状态码的值
+			ADD_OR_EDIT = 0;
+			//如果没有Item，则为添加Item界面，save与spinner的监听事件则不一样
+			addSpinnerLisener();
+			save.setOnClickListener(this);
+		}
+
 		cancel.setOnClickListener(this);
 
+
+	}
+
+	//将InputTitle与InputContent更改的时候，则显示save按钮
+	private void setSaveButtonShow() {
+		inputTitle.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				save.setVisibility(View.INVISIBLE);
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				save.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				save.setVisibility(View.VISIBLE);
+			}
+		});
+		inputContent.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				save.setVisibility(View.INVISIBLE);
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				save.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				save.setVisibility(View.VISIBLE);
+			}
+		});
+	}
+
+	//向EditView中填充数据
+	private void fillValue(int id) {
+		Item item = ItemUtil.selectItemById(id);
+		inputTitle.setText(item.getTitle());
+		inputContent.setText(item.getContent());
+		inputTime.setText(ChangeDateAndLong.getFromatDateString(item.getDatetime()));
+		inputLabel.setSelection(item.getLabel(), true);
+		//save按钮隐藏
+		save.setVisibility(View.INVISIBLE);
 	}
 
 	public void insertNewItem(){
@@ -85,8 +172,15 @@ public class AddOneItemActivity extends Activity implements View.OnClickListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
-
+	private void updateItem() {
+		Item item = new Item();
+		item.setTitle(inputTitle.getText().toString());
+		item.setContent(inputContent.getText().toString());
+		item.setLabel(selectLabelId);
+		ItemUtil.updateItemById(ID,item);
+		finish();
 	}
 
 	private void addSpinnerLisener() {
@@ -94,6 +188,7 @@ public class AddOneItemActivity extends Activity implements View.OnClickListener
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				selectLabelId = position;
+				save.setVisibility(View.VISIBLE);
 			}
 
 			@Override
@@ -124,22 +219,50 @@ public class AddOneItemActivity extends Activity implements View.OnClickListener
 		inputTime.setText(ChangeDateAndLong.formatDateFromDate(nowTime));
 	}
 
-	public void initEditText() {
-		windowHeight = getWindowManager().getDefaultDisplay().getHeight();
-		inputItemContent = (EditText) findViewById(R.id.input_item_content);
-		inputItemContent.setHeight((int) (windowHeight * 0.6));
+	public void initEditText(Screen screen) {
+		if(screen == Screen.VERTICAL){
+			windowHeight = getWindowManager().getDefaultDisplay().getHeight();
+			inputItemContent = (EditText) findViewById(R.id.input_item_content);
+			inputItemContent.setHeight((int) (windowHeight * 0.6));
+		}
+		if(screen == Screen.HORIZONTAL){
+			windowHeight = getWindowManager().getDefaultDisplay().getHeight();
+			inputItemContent = (EditText) findViewById(R.id.input_item_content);
+			inputItemContent.setHeight((int) (windowHeight * 0.4));
+		}
+
 	}
 
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()){
-			case R.id.button_save_input:
-				insertNewItem();
+		switch (ADD_OR_EDIT){
+			//添加Item下的save与cancele的实现
+			case 0:{
+				switch (v.getId()){
+					case R.id.button_save_input:
+						insertNewItem();
+						break;
+					case R.id.button_cancel_input:
+						finish();
+						break;
+				}
 				break;
-			case R.id.button_cancel_input:
-				finish();
+			}
+			//编辑Item下的save与cancele的实现
+			case 1:{
+				switch (v.getId()){
+					case R.id.button_save_input:
+						updateItem();
+						break;
+					case R.id.button_cancel_input:
+						finish();
+						break;
+				}
 				break;
+			}
 		}
+
 	}
+
 }

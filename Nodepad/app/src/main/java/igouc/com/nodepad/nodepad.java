@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -88,7 +89,13 @@ public class nodepad extends AppCompatActivity
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
- 	            Toast.makeText(nodepad.this,"star",Toast.LENGTH_SHORT).show();
+				TextView viewId = (TextView) view.findViewById(R.id.show_eachitem_id);
+				String itemId = viewId.getText().toString();
+				Bundle bundle = new Bundle();
+				bundle.putString("itemId", itemId);
+				Intent intent = new Intent(nodepad.this,AddOneItemActivity.class);
+				intent.putExtras(bundle);
+				nodepad.this.startActivity(intent);
 			}
 		});
 	}
@@ -109,9 +116,14 @@ public class nodepad extends AppCompatActivity
 	}
 	//根据label_int查处Item并且刷新适配器
 	private void flashView(int labelKey){
-		nodeList = ItemUtil.getItemsByLabel(labelKey);
-		adapater = new ShowNodeListAdapater(nodepad.this,nodeList,this);
-		listView.setAdapter(adapater);
+		//判断是否为0，如果为0，则进行全部刷新，否则进行按标签刷新
+		if(labelKey == 0){
+			flashView();
+		}else{
+			nodeList = ItemUtil.getItemsByLabel(labelKey);
+			adapater = new ShowNodeListAdapater(nodepad.this,nodeList,this);
+			listView.setAdapter(adapater);
+		}
 	}
 
 

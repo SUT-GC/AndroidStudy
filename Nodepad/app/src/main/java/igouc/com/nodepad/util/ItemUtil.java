@@ -67,14 +67,32 @@ public class ItemUtil {
 		sqLiteDatabase.execSQL(sql);
 	}
 
+	//根据Id查询Item
+	public static Item selectItemById(int id){
+		Item item = new Item();
+		String sql = "select * from node where _id = '"+id+"'";
+		Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
+
+		while (cursor.moveToNext()){
+			item.setId(cursor.getInt(0));
+			item.setTitle(cursor.getString(1));
+			item.setContent(cursor.getString(2));
+			item.setDatetime(cursor.getLong(3));
+			item.setLabel(cursor.getInt(4));
+			item.setPower(cursor.getInt(5));
+		}
+
+		return item;
+	}
+
 
 	//根据id更新Item
 	public static void updateItemById(int id, Item item){
 		String sql = "update node set " +
-						"title = '"+item.getTitle()+"'" +
-						"content = '"+item.getContent()+"'" +
-						"label = '"+item.getLabel()+"'" +
-					 "where _id = '"+id+"'";
+						" title = '"+item.getTitle()+"'," +
+						" content = '"+item.getContent()+"'," +
+						" label = '"+item.getLabel()+"'" +
+					 " where _id = '"+id+"'";
 		sqLiteDatabase.execSQL(sql);
 	}
 
@@ -91,7 +109,7 @@ public class ItemUtil {
 		List<Map<String,Object>> listNode = new ArrayList<>();
 		String sql = "select * from node " +
 						"where label = '"+label+"'" +
-						"order by datetime desc , power desc";
+						"order by power desc , datetime desc";
 		Cursor cursor = sqLiteDatabase.rawQuery(sql,null);
 		Map<String,Object> item;
 		while(cursor.moveToNext()){

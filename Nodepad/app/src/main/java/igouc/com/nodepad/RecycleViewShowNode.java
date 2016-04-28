@@ -76,14 +76,6 @@ public class RecycleViewShowNode extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()){
-			case R.id.test_add:
-				adapter.addItem(1);
-				break;
-			case R.id.test_delete:
-				adapter.deleteItem(1);
-				break;
-		}
 		return super.onOptionsItemSelected(item);
 	}
 
