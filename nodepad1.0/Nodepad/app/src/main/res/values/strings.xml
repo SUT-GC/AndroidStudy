@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Nodepad</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="nav_head_title">记事本</string>
+    <string name="gcinfor">www.igouc.com</string>
+    <string name="top">顶</string>
+    <string name="title_hint">请输入标题</string>
+    <string name="content_hint">输入您要记录的内容</string>
+    <string name="save_button">保存</string>
+    <string name="cancel_button">退出</string>
+</resources>
