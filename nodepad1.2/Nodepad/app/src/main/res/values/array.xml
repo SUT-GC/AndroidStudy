@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="labels">
+        <item>默认</item>
+        <item>生活</item>
+        <item>学习</item>
+        <item>工作</item>
+    </array>
+</resources>
