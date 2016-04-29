@@ -23,6 +23,7 @@
         <activity
             android:name=".AddOneItemActivity"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
             ></activity>
     </application>
 

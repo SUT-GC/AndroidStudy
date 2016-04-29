@@ -170,6 +170,7 @@ public class AddOneItemActivity extends Activity implements View.OnClickListener
 		inputContent.setText(item.getContent());
 		inputTime.setText(ChangeDateAndLong.getFromatDateString(item.getDatetime()));
 		inputLabel.setSelection(item.getLabel(), true);
+
 		//save按钮隐藏
 		save.setVisibility(View.INVISIBLE);
 	}
